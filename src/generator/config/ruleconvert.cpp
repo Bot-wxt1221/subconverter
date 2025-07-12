@@ -488,6 +488,10 @@ static rapidjson::Value transformRuleToSingBox(std::vector<std::string_view> &ar
     {
         rule_obj.AddMember("outbound", rapidjson::Value(value.data(), value.size(), allocator), allocator);
     }
+        else if(type == "geoip"){
+       rule_obj.AddMember("rule_set", rapidjson::Value(value.data(), value.size(), allocator), allocator);
+rule_obj.AddMember("outbound", rapidjson::Value(group.c_str(), allocator), allocator);
+}
     else
     {
         rule_obj.AddMember(rapidjson::Value(type.c_str(), allocator), rapidjson::Value(value.data(), value.size(), allocator), allocator);
