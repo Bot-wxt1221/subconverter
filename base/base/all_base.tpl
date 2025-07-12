@@ -295,7 +295,6 @@ enhanced-mode-by-rule = true
       }
     ],
 "rule_set": [
-{
  { 
         "tag": "geosite-cn",
         "type": "remote",
@@ -310,7 +309,6 @@ enhanced-mode-by-rule = true
         "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
         "download_detour": "direct"
       }
-}
 
 ],
         "rules": [
