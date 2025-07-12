@@ -276,62 +276,88 @@ enhanced-mode-by-rule = true
     },
     "dns": {
         "servers": [
-            {
-                "tag": "dns_proxy",
-                "address": "tls://1.1.1.1",
-                "address_resolver": "dns_resolver"
-            },
-            {
-                "tag": "dns_direct",
-                "address": "h3://dns.alidns.com/dns-query",
-                "address_resolver": "dns_resolver",
-                "detour": "DIRECT"
-            },
-            {
-                "tag": "dns_fakeip",
-                "address": "fakeip"
-            },
-            {
-                "tag": "dns_resolver",
-                "address": "223.5.5.5",
-                "detour": "DIRECT"
-            },
-            {
-                "tag": "block",
-                "address": "rcode://success"
-            }
-        ],
+      {
+        "tag": "google",
+        "type": "tls",
+        "server": "8.8.8.8",
+        "detour": "Proxy"
+      },
+      { 
+        "tag": "local",
+        "type": "https",
+        "server": "223.5.5.5"
+      },
+      {
+        "tag": "fakeip",
+        "type": "fakeip",
+        "inet4_range": "198.18.0.0/15",
+        "inet6_range": "fc00::/18"
+      }
+    ],
+"rule_set": [
+{
+ { 
+        "tag": "geosite-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs",
+        "download_detour": "direct"
+      },
+{
+        "tag": "geosite-geolocation-!cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
+        "download_detour": "direct"
+      }
+}
+
+],
         "rules": [
-            {
-                "outbound": [
-                    "any"
-                ],
-                "server": "dns_resolver"
-            },
-            {
-                "geosite": [
-                    "category-ads-all"
-                ],
-                "server": "dns_block",
-                "disable_cache": true
-            },
-            {
-                "geosite": [
-                    "geolocation-!cn"
-                ],
-                "query_type": [
-                    "A",
-                    "AAAA"
-                ],
-                "server": "dns_fakeip"
-            },
-            {
-                "geosite": [
-                    "geolocation-!cn"
-                ],
-                "server": "dns_proxy"
-            }
+      {
+        "clash_mode": "direct",
+        "server": "local"
+      },
+      { 
+        "clash_mode": "global",
+        "server": "google"
+      },
+      {
+        "query_type": [
+          "A",
+          "AAAA"
         ],
+        "rule_set": "geosite-cn",
+        "server": "fakeip"
+      },
+      { 
+        "rule_set": "geosite-cn",
+        "server": "local"
+      },
+      {
+        "type": "logical",
+        "mode": "and",
+        "rules": [
+          {
+            "rule_set": "geosite-geolocation-!cn",
+            "invert": true
+          },
+          { 
+            "rule_set": "geoip-cn"
+          }
+        ],"server": "google",
+        "client_subnet": "114.114.114.114/24"
+      },
+      {
+        "query_type": [
+          "A",
+          "AAAA"
+        ],
+        "server": "fakeip"
+      }
+    ],
+
+
         "final": "dns_direct",
         "independent_cache": true,
         "fakeip": {
@@ -376,6 +402,15 @@ enhanced-mode-by-rule = true
     "outbounds": [],
     "route": {
         "rules": [],
+        "rule_set": [
+      {
+        "tag": "cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs",
+        "download_detour": "proxy"
+      }
+    ],
         "auto_detect_interface": true
     },
     "experimental": {
